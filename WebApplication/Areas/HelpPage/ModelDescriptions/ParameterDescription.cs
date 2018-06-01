@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace WebApplication.Areas.HelpPage.ModelDescriptions
+namespace context.Areas.HelpPage.ModelDescriptions
 {
     public class ParameterDescription
     {

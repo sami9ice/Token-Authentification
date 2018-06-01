@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -14,11 +13,13 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
-using WebApplication.Models;
-using WebApplication.Providers;
-using WebApplication.Results;
+using context.Models;
+using context.Providers;
+using context.Results;
+using System.Configuration;
+using context.Messaging;
 
-namespace WebApplication.Controllers
+namespace context.Controllers
 {
     [Authorize]
     [RoutePrefix("api/Account")]
@@ -80,7 +81,6 @@ namespace WebApplication.Controllers
         public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, bool generateState = false)
         {
             IdentityUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
-            var users = UserManager.Users.ToList();
 
             if (user == null)
             {
@@ -127,7 +127,7 @@ namespace WebApplication.Controllers
 
             IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
                 model.NewPassword);
-            
+
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -260,9 +260,9 @@ namespace WebApplication.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
@@ -324,22 +324,71 @@ namespace WebApplication.Controllers
         [AllowAnonymous]
         [Route("Register")]
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
-        {
+        {          
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
-
+            var user = new ApplicationUser()
+            {
+                UserName = model.Email,
+                Email = model.Email
+            };
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
+            if (result.Succeeded) { await SendMeMail(model); }
+            else
+            {
+                return GetErrorResult(result);
+            }
+            var userRole = Startup.RoleManagerFactory.Invoke();
+            string role = "ADMIN";
+
+            if (!userRole.RoleExists(role))
+            {
+                var irole = new IdentityRole()
+                {
+                    Name = role
+                };
+                userRole.Create<IdentityRole, string>(irole);
+            }
+            bool checkrole = await UserManager.IsInRoleAsync(user.Id, role);
+
+            if (!checkrole && model.Email == "admin@cyberspace.com")
+            {
+                IdentityResult roleResult = await UserManager.AddToRoleAsync(user.Id, role);
+            }
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
             }
-
             return Ok();
+        }
+
+
+
+        private static async Task SendMeMail(RegisterBindingModel model)
+        {
+            string key = ConfigurationManager.AppSettings["Sendgrid.Key"];
+            EmailService messageSvc = new EmailService(key);
+
+            string htmlBody = $@"<p>Confirmation Email</p>
+                                  <p>Your registration was successful</p>  
+                                 <ul>
+                               <li>Full Name: {model.FirstName} {model.LastName} </li>
+                                <li>Email: {model.Email}</li>
+                                 <li>Password:{model.Password}</li>                                                           
+                            </ul>";
+
+            EmailMessageDetails msg = new EmailMessageDetails()
+            {
+                Body = htmlBody,
+                Subject = "Registration Details",
+                From = model.FirstName,
+                Recipient = model.Email
+            };
+
+            await messageSvc.SendMail(msg, true);
         }
 
         // POST api/Account/RegisterExternal
@@ -370,7 +419,7 @@ namespace WebApplication.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
             return Ok();
         }

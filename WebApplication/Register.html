@@ -1,102 +1,92 @@
-﻿<!DOCTYPE html>
+﻿<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link href="Content/style.css" rel="stylesheet" />
+<!------ Include the above in your HEAD tag ---------->
+
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title></title>
-    <link href="Content/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="personal-style.css">
 </head>
-<body style="padding-top:45px">
+<body>
+
     <div class="container">
+        <center> <b id="login-name">SIGN-UP Here </b> </center>>
+
         <div class="row">
-            <div class="col-md-9 col-md-offset-3">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th colspan="2">
-                                <h4>
-                                    Register
-                                </h4>
 
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                Email
-                            </td>
-                            <td>
-                                <input type="email" id="email" placeholder="Email" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Password
-                            </td>
-                            <td>
-                                <input type="password" id="password" placeholder ="Password" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Comfirm Password
-                            </td>
-                            <td>
-                                <input type="password" id="confirmPassword" placeholder="Password" />
-                            </td>
-                        </tr>
-                        <tr>
+            <div class="col-md-6 col-md-offset-3" id="login">
+                <form>
 
-                            <td colspan="2">
-                                <input id="bnRegister" class="btn btn-success" value="Register" type="button" />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <div class="form-group">
+                        <label class="user">FirstName:  </label>
+
+                        <input type="text" class="form-control" id="FirstName" name="FirstName" placeholder="FirstName">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="user"> LastName: </label>
+                        <input type="email" class="form-control" id="LastName" name="LastName" placeholder=" LastName">
+                    </div>
+                    <div class="form-group">
+                        <label class="user"> Email: </label>
+                        <input type="text" class="form-control" id="Email" name="Email" placeholder=" Enter your Email Address">
+                    </div>
+                    <div class="form-group">
+                        <label class="user"> Password: </label>
+                        <input type="text" class="form-control" id="Password" name="Password" placeholder=" Enter Password">
+                    </div>
+                    <div class="form-group">
+                        <label class="user">Confirm Password: </label>
+                        <input type="text" class="form-control" id="ConfirmPassword" name="ConfirmPassword" placeholder=" Enter Confirm passowrd">
+                    </div>                  
+                    <div class="form-group">
+                        <input id="bnRegister" class="btn btn-success" value="Register" type="button" />
+                    </div>               
+
+                </form>
             </div>
         </div>
-    </div>
-    <div id="error" class="alert alert-danger collapse">
-        <a id="close" href="#" class="close">
-            &times;
-        </a>
-        <div id="errorText"></div>
     </div>
 
     <script src="Scripts/jquery-1.10.2.min.js"></script>
     <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/sweetalert.min.js"></script>
     <script type="text/javascript">
 
-        $('#close').click(
-            function () {
 
-                $('#error').hide('fade');
-            }
-        );
-       
-       
         $('#bnRegister').click(function () {
             $.ajax({
-                url: '/api/Account/Register',
+                url: 'api/Account/Register',
                 method: 'POST',
                 data: {
-                    email: $('#email').val(),
-                    password: $('#password').val(),
-                    confirmPassword: $('#confirmPassword').val()
+                    FirstName: $('#FirstName').val(),
+                    LastName: $('#LastName').val(),
+                    Email: $('#Email').val(),
+                    Password: $('#Password').val(),
+                    ConfirmPassword: $('#ConfirmPassword').val()
                 },
                 success: function (response) {
-                    alert("you have successfully registered");
+                    alert("Success");
+                    window.location.href("Login.html");
                 },
                 error: function (jqXHR) {
-                    $('#errorText').text(jqXHR.responseText);
-                    $('#error').show('fade');
+                    alert("Registration not successful, try again");
                 }
-
             });
-
-
         });
     </script>
-
 </body>
 </html>
+
+
+
+

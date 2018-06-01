@@ -26,7 +26,7 @@
                                 Email
                             </td>
                             <td>
-                                <input type="email" id="email" placeholder="Email" />
+                                <input type="email" id="txtEmail" placeholder="Email" />
                             </td>
                         </tr>
                         <tr>
@@ -34,7 +34,7 @@
                                 Password
                             </td>
                             <td>
-                                <input type="password" id="password" placeholder="Password" />
+                                <input type="password" id="txtPassword" placeholder="Password" />
                             </td>
                         </tr>
 
@@ -62,7 +62,7 @@
     <script src="Scripts/jquery-1.10.2.min.js"></script>
     <script src="Scripts/bootstrap.min.js"></script>
     <script type="text/javascript">
-
+   
         $('#close').click(
             function () {
 
@@ -73,10 +73,10 @@
         $.ajaxSetup
             ({
                 beforeSend: function () {
-                    $('#loading').hide();
+                    $('#loading').show();
                 },
                 complete: function () {
-                    $('#loading').show();
+                    $('#loading').hide();
 
                 },
            
@@ -88,12 +88,14 @@
                 url: '/token',
                 method: 'POST',
                 data: {
-                    email: $('#email').val(),
-                    password: $('#password').val(),
-                   
+                    email: $('#txtEmail').val(),
+                    password: $('#txtPassword').val(),
+                    grant_type: 'password'
                 },
                 success: function (response) {
-                    alert(response.responseText);
+                    localStorage.setItem("accessToken", response.access_token);
+                    localStorage.setItem("userName", response.userName);
+                    window.location.href = "Resource.html";
                 },
                 error: function (jqXHR) {
                     $('#errorText').text(jqXHR.responseText);
@@ -103,8 +105,10 @@
             });
 
 
+
         });
-    </script>
+
+</script>
 
 </body>
 </html>

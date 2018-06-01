@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebApplication.Models;
+using context.Models;
 
-namespace WebApplication.Abstract
+namespace WebApplication.Repo
 {
     public interface IUserRepository
     {
-        IEnumerable<User> GetUsers();
+        IEnumerable<ApplicationUser> GetAll();
     }
 }

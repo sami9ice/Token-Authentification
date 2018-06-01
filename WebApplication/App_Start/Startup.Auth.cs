@@ -8,15 +8,15 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
-using WebApplication.Providers;
-using WebApplication.Models;
+using context.Providers;
+using context.Models;
 
-namespace WebApplication
+namespace context
 {
     public partial class Startup
     {
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
-
+        public static Func<RoleManager<IdentityRole, string>> RoleManagerFactory { get; private set; } = RoleCreate;
         public static string PublicClientId { get; private set; }
 
         // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
@@ -64,6 +64,16 @@ namespace WebApplication
             //    ClientId = "",
             //    ClientSecret = ""
             //});
+           
+        }
+        public static RoleManager<IdentityRole, string> RoleCreate()
+        {
+            var dbContext = new ApplicationDbContext();
+            var store = new RoleStore<IdentityRole, string, IdentityUserRole>(dbContext);
+            var rolemanager = new RoleManager<IdentityRole, string>(store);
+
+            return rolemanager;
         }
     }
+
 }

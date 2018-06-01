@@ -10,13 +10,9 @@ namespace WebApplication.App_Start
 
     using Ninject;
     using Ninject.Web.Common;
-    using WebApplication.Abstract;
-    using WebApplication.concrete;
-    using WebApplication.Models;
-    using Moq;
-    using System.Collections.Generic;
     using Ninject.Web.Common.WebHost;
-  
+    using WebApplication.Repo;
+    
 
     public static class NinjectWebCommon
     {
@@ -68,22 +64,7 @@ namespace WebApplication.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            Grade d1 = new Grade { Id = 1, Name = "PGD Student" };
-            Grade d2 = new Grade { Id = 2, Name = "Undergraduate Student" };
-
-            Mock<IUserRepository> mock = new Mock<IUserRepository>();
-            mock.Setup(m => m.GetUsers()).Returns(new List<User>
-            {
-                 new User{ Name = "Chuks", MatricNo = "01", Id = 1, Grade = d1 },
-                 new User {Name = "Emmanuel", MatricNo = "02", Id = 2, Grade = d2 },
-                 new User { Name = "Muna", MatricNo = "03", Id = 3, Grade = d1 },
-                 new User{ Name = "Winnie", MatricNo = "04", Id = 4, Grade = d2 },
-                 new User { Name = "Lola", MatricNo = "05", Id = 5, Grade = d1 }
-
-            });
-            kernel.Bind<IUserRepository>().ToConstant(mock.Object);
-
-           // kernel.Bind<IUserRepository>().To<UserRepository>();
+            kernel.Bind<IUserRepository>().To<UserRepository>();
         }
     }
 }
